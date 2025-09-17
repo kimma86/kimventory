@@ -8,7 +8,7 @@ db.init_app(app)
 
 with app.app_context():
     db.create_all()
-    # db.drop_all()  # nuke database
+    #db.drop_all()  # nuke database
 
 @app.route('/')
 def index():
@@ -43,6 +43,30 @@ def add_item():
         return redirect(url_for('index'))
 
     return render_template('add_item.html')
+
+@app.route('/scan', methods=['POST'])
+def scan_ean():
+    ean = request.form['ean']
+
+    item = Item.query.filter_by(artnr=ean).first()
+
+    # TODO: integrate with an api to collect item data based on EAN, we could use ahlsell maybe
+
+    if item:
+        item.quantity += 1
+        db.session.commit()
+    else:
+        new_item = Item(
+            name=f"Item {ean}",
+            quantity=1,
+            artnr=ean,
+            price=0.0,
+            description="Scanned item"
+        )
+        db.session.add(new_item)
+        db.session.commit()
+
+    return redirect(url_for('index'))
 
 
 @app.route('/edit/<int:item_id>', methods=['GET', 'POST'])

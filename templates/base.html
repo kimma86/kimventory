@@ -6,6 +6,36 @@
 </head>
 <body class="container mt-4">
     <h1 class="mb-4">📦 Inventory System</h1>
+
+    <!-- Scan form -->
+    <form id="scanForm" action="{{ url_for('scan_ean') }}" method="POST">
+        <div class="mb-3">
+            <label for="ean">EAN</label>
+            <input type="text" name="ean" id="ean" class="form-control" autofocus>
+        </div>
+    </form>
+
     {% block content %}{% endblock %}
 </body>
 </html>
+
+<script>
+let eanInput = document.getElementById("ean");
+
+// Always clear & focus on page load
+window.onload = () => {
+    eanInput.value = "";
+    eanInput.focus();
+};
+
+// Debounce auto-submit
+let debounceTimer;
+eanInput.addEventListener("input", function() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+        if (this.value.length >= 6) {
+            document.getElementById("scanForm").submit();
+        }
+    }, 400);
+});
+</script>
