@@ -8,7 +8,7 @@ db.init_app(app)
 
 with app.app_context():
     db.create_all()
-    # db.drop_all()  # Uncomment to reset the database
+    # db.drop_all()  # nuke database
 
 @app.route('/')
 def index():
@@ -24,12 +24,26 @@ def add_item():
         price = float(request.form['price'])
         description = request.form['description']
 
-        new_item = Item(name=name, quantity=quantity, artnr=artnr, price=price, description=description)
-        db.session.add(new_item)
-        db.session.commit()
+        existing_item = Item.query.filter_by(artnr=artnr).first() # Check for existing item by artnr
+
+        if existing_item:
+            existing_item.quantity += quantity
+            db.session.commit()
+        else:
+            new_item = Item(
+                name=name,
+                quantity=quantity,
+                artnr=artnr,
+                price=price,
+                description=description
+            )
+            db.session.add(new_item)
+            db.session.commit()
 
         return redirect(url_for('index'))
+
     return render_template('add_item.html')
+
 
 @app.route('/edit/<int:item_id>', methods=['GET', 'POST'])
 def edit_item(item_id):
@@ -40,6 +54,7 @@ def edit_item(item_id):
         item.artnr = request.form['artnr']
         item.price = float(request.form['price'])
         item.description = request.form['description']
+        item.ean = request.form['description']
 
         db.session.commit()
         return redirect(url_for('index'))

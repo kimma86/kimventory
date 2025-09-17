@@ -1,10 +1,66 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block content %}
+<h2>Edit Item</h2>
+<form method="POST">
+    <div class="mb-3">
+        <label for="name" class="form-label">Name</label>
+        <input
+            type="text"
+            id="name"
+            name="name"
+            value="{{ item.name }}"
+            class="form-control"
+            required
+        >
+    </div>
 
-</body>
-</html>
+    <div class="mb-3">
+        <label for="artnr" class="form-label">Artikelnummer</label>
+        <input
+            type="text"
+            id="artnr"
+            name="artnr"
+            value="{{ item.artnr }}"
+            class="form-control"
+            required
+        >
+    </div>
+
+    <div class="mb-3">
+        <label for="quantity" class="form-label">Quantity</label>
+        <input
+            type="number"
+            id="quantity"
+            name="quantity"
+            value="{{ item.quantity }}"
+            class="form-control"
+            required
+        >
+    </div>
+
+    <div class="mb-3">
+        <label for="price" class="form-label">Price</label>
+        <input
+            type="number"
+            id="price"
+            name="price"
+            step="0.01"
+            value="{{ item.price }}"
+            class="form-control"
+            required
+        >
+    </div>
+
+    <div class="mb-3">
+        <label for="description" class="form-label">Description</label>
+        <textarea
+            id="description"
+            name="description"
+            class="form-control"
+        >{{ item.description }}</textarea>
+    </div>
+
+    <button type="submit" class="btn btn-success">💾 Save Changes</button>
+    <a href="{{ url_for('index') }}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}
