@@ -5,10 +5,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="container mt-4">
-    <h1 class="mb-4">📦 Inventory System</h1>
+    <h1 class="mb-4">📦 kImventory System</h1>
 
-    <!-- Scan form -->
-    <form id="scanForm" action="{{ url_for('scan_ean') }}" method="POST">
+    <form id="scanForm" action="{{ url_for('scan_ean') }}" method="POST" placeholder="Scan or enter EAN">
         <div class="mb-3">
             <label for="ean">EAN</label>
             <input type="text" name="ean" id="ean" class="form-control" autofocus>
@@ -16,11 +15,23 @@
     </form>
 
     {% block content %}{% endblock %}
+
+    <div style="position: fixed; bottom: 10px; right: 10px; text-align: center;">
+        <img src="{{ url_for('static', filename='barcodes/3606480210389.jpg') }}"
+             alt="Barcode"
+             class="img-thumbnail"
+             style="width:150px; cursor:pointer;"
+             id="barcodeImg">
+        <div style="font-size:12px; color:#888;">Click barcode to add</div>
+    </div>
+
 </body>
 </html>
 
 <script>
 let eanInput = document.getElementById("ean");
+let scanForm = document.getElementById("scanForm");
+let barcodeImg = document.getElementById("barcodeImg");
 
 // Always clear & focus on page load
 window.onload = () => {
@@ -28,14 +39,24 @@ window.onload = () => {
     eanInput.focus();
 };
 
-// Debounce auto-submit
+// Debounce auto-submit on manual input
 let debounceTimer;
 eanInput.addEventListener("input", function() {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {
         if (this.value.length >= 6) {
-            document.getElementById("scanForm").submit();
+            scanForm.submit();
         }
     }, 400);
+});
+
+// Clickable barcode → extract filename as EAN
+barcodeImg.addEventListener("click", function() {
+    let src = this.getAttribute("src");
+    let filename = src.split("/").pop();        // "3606480210389.jpg"
+    let ean = filename.split(".")[0];           // "3606480210389"
+
+    eanInput.value = ean;
+    scanForm.submit();
 });
 </script>

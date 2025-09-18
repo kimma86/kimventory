@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 from models import db, Item
+from some_api import SomeAPI, domain
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///inventory.db'
@@ -9,6 +10,8 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
     #db.drop_all()  # nuke database
+
+api = SomeAPI(base_url=f"{domain}/api/search?parameters.SearchPhrase=")
 
 @app.route('/')
 def index():
@@ -24,7 +27,7 @@ def add_item():
         price = float(request.form['price'])
         description = request.form['description']
 
-        existing_item = Item.query.filter_by(artnr=artnr).first() # Check for existing item by artnr
+        existing_item = Item.query.filter_by(artnr=artnr).first() #  existing item by artnr
 
         if existing_item:
             existing_item.quantity += quantity
@@ -48,26 +51,38 @@ def add_item():
 def scan_ean():
     ean = request.form['ean']
 
-    item = Item.query.filter_by(artnr=ean).first()
+    # something here is messed up
+    item = Item.query.filter_by(ean=ean).first() # existing item by ean
 
-    # TODO: integrate with an api to collect item data based on EAN, we could use ahlsell maybe
 
     if item:
         item.quantity += 1
         db.session.commit()
     else:
+
+        products = api.get_data(ean)
+        if products and len(products) > 0:
+            product = products[0]
+            artnr = product.get("variantNumber", ean)
+            name = product.get("name", f"Item {ean}")
+            brand = product.get("brand", "Scanned item")
+        else:
+            artnr = ean
+            name = f"Item {ean}"
+            brand = "Scanned item"
+
         new_item = Item(
-            name=f"Item {ean}",
+            name=name,
             quantity=1,
-            artnr=ean,
+            artnr=artnr,
             price=0.0,
-            description="Scanned item"
+            description=brand,
+            ean=ean
         )
         db.session.add(new_item)
         db.session.commit()
 
     return redirect(url_for('index'))
-
 
 @app.route('/edit/<int:item_id>', methods=['GET', 'POST'])
 def edit_item(item_id):
@@ -92,7 +107,4 @@ def delete_item(item_id):
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    app.run(debug=True)#
-#     def from_dict(self, data):
-#         for field in ['name', 'quantity', 'artnr', 'price', 'description']:
-#             if field in data:
+    app.run(debug=True)
