@@ -12,6 +12,20 @@
             <label for="ean">EAN</label>
             <input type="text" name="ean" id="ean" class="form-control" autofocus>
         </div>
+        <div class="form-check form-switch">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            role="switch"
+            id="flexSwitchCheckChecked"
+            name="flexSwitchCheckChecked"
+            value="1" checked
+          >
+          <label class="form-check-label" for="flexSwitchCheckChecked">
+            Scanned items are added to db
+          </label>
+        </div>
+
     </form>
 
     {% block content %}{% endblock %}
@@ -29,9 +43,9 @@
 </html>
 
 <script>
-let eanInput = document.getElementById("ean");
-let scanForm = document.getElementById("scanForm");
-let barcodeImg = document.getElementById("barcodeImg");
+let eanInput   = document.getElementById("ean");
+let scanForm   = document.getElementById("scanForm");
+let barcodeImg = document.getElementById("barcodeImg"); // just for demo
 
 // Always clear & focus on page load
 window.onload = () => {
@@ -45,7 +59,7 @@ eanInput.addEventListener("input", function() {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {
         if (this.value.length >= 6) {
-            scanForm.submit();
+            scanForm.requestSubmit();   // ✅ submit the full form with checkbox state
         }
     }, 400);
 });
@@ -53,10 +67,18 @@ eanInput.addEventListener("input", function() {
 // Clickable barcode → extract filename as EAN
 barcodeImg.addEventListener("click", function() {
     let src = this.getAttribute("src");
-    let filename = src.split("/").pop();        // "3606480210389.jpg"
-    let ean = filename.split(".")[0];           // "3606480210389"
+    let filename = src.split("/").pop();
+    let ean = filename.split(".")[0];
 
     eanInput.value = ean;
-    scanForm.submit();
+    scanForm.requestSubmit();              // ✅ ensures checkbox goes too
+});
+
+// After every form submit, reset & refocus input
+scanForm.addEventListener("submit", () => {
+    setTimeout(() => {
+        eanInput.value = "";
+        eanInput.focus();
+    }, 100);
 });
 </script>

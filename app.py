@@ -47,47 +47,55 @@ def add_item():
 
     return render_template('add_item.html')
 
+
 @app.route('/scan', methods=['POST'])
 def scan_ean():
     ean = request.form['ean']
-    checkbox = request.form.get('flexSwitchCheckChecked')
+    checkbox = request.form.get('flexSwitchCheckChecked')  # "1" if checked, None if not
+
+    item = Item.query.filter_by(ean=ean).first()
     print(request.form)
 
-    print(checkbox)
-    print(f"Checkbox is {'checked' if checkbox else 'not checked'}")
-    # something here is messed up
-    item = Item.query.filter_by(ean=ean).first() # existing item by ean
-
-
-    if item:
-        item.quantity += 1
-        db.session.commit()
-    else:
-
-        products = api.get_data(ean)
-        if products and len(products) > 0:
-            product = products[0]
-            artnr = product.get("variantNumber", ean)
-            name = product.get("name", f"Item {ean}")
-            brand = product.get("brand", "Scanned item")
+    if checkbox:  # ✅ ADD MODE
+        if item:
+            item.quantity += 1
+            db.session.commit()
+            print('checkbox is 1 and item exists')
         else:
-            artnr = ean
-            name = f"Item {ean}"
-            brand = "Scanned item"
+            products = api.get_data(ean)
+            if products and len(products) > 0:
+                product = products[0]
+                artnr = product.get("variantNumber", ean)
+                name = product.get("name", f"Item {ean}")
+                brand = product.get("brand", "Scanned item")
+                ean = ean  # use artnr as ean if available
+            else:
+                artnr = ean
+                name = f"Item {ean}"
+                brand = "Scanned item"
 
-        new_item = Item(
-            name=name,
-            quantity=1,
-            artnr=artnr,
-            price=0.0,
-            description=brand,
-            ean=ean
-        )
+            new_item = Item(
+                name=name,
+                quantity=1,
+                artnr=artnr,
+                price=0.0,
+                description=brand,
+                ean=ean
+            )
+            db.session.add(new_item)
+            db.session.commit()
 
-        db.session.add(new_item)
-        db.session.commit()
+    else:  # ❌ REMOVE MODE
+        if item:  # only try to remove if it exists
+            if item.quantity > 1:
+                item.quantity -= 1
+            else:
+                db.session.delete(item)
+        # If no item exists, do nothing (safe fail)
 
+    db.session.commit()
     return redirect(url_for('index'))
+
 
 @app.route('/edit/<int:item_id>', methods=['GET', 'POST'])
 def edit_item(item_id):

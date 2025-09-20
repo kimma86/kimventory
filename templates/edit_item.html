@@ -60,6 +60,15 @@
         >{{ item.description }}</textarea>
     </div>
 
+    <div class="mb-3">
+        <label for="ean" class="form-label">ean</label>
+        <textarea
+            id="ean"
+            name="ean"
+            class="form-control"
+        >{{ item.ean }}</textarea>
+    </div>
+
     <button type="submit" class="btn btn-success">💾 Save Changes</button>
     <a href="{{ url_for('index') }}" class="btn btn-secondary">Cancel</a>
 </form>
