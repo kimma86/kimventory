@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session
 from models import db, Item
 from some_api import SomeAPI, domain
 
@@ -12,11 +12,17 @@ with app.app_context():
     #db.drop_all()  # nuke database
 
 api = SomeAPI(base_url=f"{domain}/api/search?parameters.SearchPhrase=")
+app.secret_key = "StellaSlangbella2025"
 
-@app.route('/')
+@app.route("/", methods=["GET", "POST"])
 def index():
-    items = Item.query.all()
-    return render_template('index.html', items=items)
+    if request.method == "POST":
+        session["flexSwitchCheckChecked"] = "flexSwitchCheckChecked" in request.form
+
+    checkbox_state = session.get("flexSwitchCheckChecked", True)
+
+    return render_template("index.html", checkbox_state=checkbox_state, items=Item.query.all())
+
 
 @app.route('/add', methods=['GET', 'POST'])
 def add_item():
@@ -56,7 +62,7 @@ def scan_ean():
     item = Item.query.filter_by(ean=ean).first()
     print(request.form)
 
-    if checkbox:  # ✅ ADD MODE
+    if checkbox:
         if item:
             item.quantity += 1
             db.session.commit()
@@ -68,7 +74,7 @@ def scan_ean():
                 artnr = product.get("variantNumber", ean)
                 name = product.get("name", f"Item {ean}")
                 brand = product.get("brand", "Scanned item")
-                ean = ean  # use artnr as ean if available
+                ean = ean
             else:
                 artnr = ean
                 name = f"Item {ean}"
@@ -85,13 +91,12 @@ def scan_ean():
             db.session.add(new_item)
             db.session.commit()
 
-    else:  # ❌ REMOVE MODE
-        if item:  # only try to remove if it exists
+    else:
+        if item:
             if item.quantity > 1:
                 item.quantity -= 1
             else:
                 db.session.delete(item)
-        # If no item exists, do nothing (safe fail)
 
     db.session.commit()
     return redirect(url_for('index'))
