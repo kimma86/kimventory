@@ -9,7 +9,21 @@
 </body>
 </html>{% extends "base.html" %}
 {% block content %}
-<a href="{{ url_for('add_item') }}" class="btn btn-primary mb-3">➕ Add Item</a>
+<div class="form-check form-switch">
+  <input
+    class="form-check-input"
+    type="checkbox"
+    role="switch"
+    id="flexSwitchCheckChecked"
+    name="flexSwitchCheckChecked"
+    value="1"
+  >
+  <label class="form-check-label" for="flexSwitchCheckChecked">
+    Scanned items are added to db
+  </label>
+</div>
+
+
 <table class="table table-bordered">
     <thead>
         <tr>
@@ -35,4 +49,5 @@
         {% endfor %}
     </tbody>
 </table>
+<a href="{{ url_for('add_item') }}" class="btn btn-primary mb-3">➕ Add item</a>
 {% endblock %}

@@ -50,7 +50,11 @@ def add_item():
 @app.route('/scan', methods=['POST'])
 def scan_ean():
     ean = request.form['ean']
+    checkbox = request.form.get('flexSwitchCheckChecked')
+    print(request.form)
 
+    print(checkbox)
+    print(f"Checkbox is {'checked' if checkbox else 'not checked'}")
     # something here is messed up
     item = Item.query.filter_by(ean=ean).first() # existing item by ean
 
@@ -79,6 +83,7 @@ def scan_ean():
             description=brand,
             ean=ean
         )
+
         db.session.add(new_item)
         db.session.commit()
 
@@ -102,8 +107,13 @@ def edit_item(item_id):
 @app.route('/delete/<int:item_id>', methods=['POST'])
 def delete_item(item_id):
     item = Item.query.get_or_404(item_id)
-    db.session.delete(item)
-    db.session.commit()
+    quantity = item.quantity
+    if quantity > 1:
+        item.quantity -= 1
+        db.session.commit()
+    else:
+        db.session.delete(item)
+        db.session.commit()
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
