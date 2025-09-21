@@ -20,7 +20,6 @@ def index():
         session["flexSwitchCheckChecked"] = "flexSwitchCheckChecked" in request.form
 
     checkbox_state = session.get("flexSwitchCheckChecked", True)
-    # print(checkbox_state)
 
     return render_template("index.html", checkbox_state=checkbox_state, items=Item.query.all())
 
@@ -61,14 +60,11 @@ def scan_ean():
     checkbox = request.form.get('flexSwitchCheckChecked')
 
     item = Item.query.filter_by(ean=ean).first()
-    # print(request.form)
 
     if checkbox:
-        # print('scan ean - checkbox is 1')
         if item:
             item.quantity += 1
             db.session.commit()
-            # print('checkbox is 1 and item exists')
         else:
             products = api.get_data(ean)
             if products and len(products) > 0:
@@ -98,7 +94,8 @@ def scan_ean():
             if item.quantity > 1:
                 item.quantity -= 1
             else:
-                db.session.delete(item)
+                # db.session.delete(item) # maybe we should just set quantity to 0? so we know what to order
+                item.quantity = 0
 
     db.session.commit()
     return redirect(url_for('index'))

@@ -11,17 +11,20 @@
 {% block content %}
 
 
-<table class="table table-bordered">
+<table class="table table-striped">
     <thead>
         <tr>
-            <th>Name</th><th>Quantity</th><th>Artikelnr</th><th>Pris</th><th>Tillverkare</th>
+            <th>Name</th><th>Quantity</th><th>Article nr</th><th>Price</th><th>Manufacturer</th>
         </tr>
     </thead>
+
     <tbody>
         {% for item in items %}
         <tr>
           <td>{{ item.name }}</td>
-          <td>{{ item.quantity }}</td>
+          <td class="{% if item.quantity < 3 %}table-warning{% elif item.quantity == 0 %}table-danger{% else %}table-success{% endif %}">
+              {{ item.quantity }}
+          </td>
           <td>{{ item.artnr }}</td>
           <td>{{ item.price }}</td>
           <td>{{ item.description }}</td>
