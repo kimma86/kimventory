@@ -7,26 +7,39 @@
 <body class="container mt-4">
     <h1 class="mb-4">📦 kImventory System</h1>
 
-    <form id="scanForm" action="{{ url_for('scan_ean') }}" method="POST" placeholder="Scan or enter EAN">
+    <form id="scanForm" action="{{ url_for('scan_ean') }}" method="POST">
         <div class="mb-3">
             <label for="ean">EAN</label>
             <input type="text" name="ean" id="ean" class="form-control" autofocus>
         </div>
-        <div class="form-check form-switch">
-          <input
-            class="form-check-input"
-            type="checkbox"
-            role="switch"
-            id="flexSwitchCheckChecked"
-            name="flexSwitchCheckChecked"
-            value="1"
-          >
-          <label class="form-check-label" for="flexSwitchCheckChecked">
-            Scanned items are added to db
-          </label>
-        </div>
 
+        <div class="form-check form-switch">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              role="switch"
+              id="flexSwitchCheckChecked"
+              name="flexSwitchCheckChecked"
+              {% if checkbox_state %} checked {% endif %}>
+            <label class="form-check-label" for="flexSwitchCheckChecked">
+              Scanned items are added to db
+            </label>
+        </div>
     </form>
+
+    <script>
+    document.getElementById("flexSwitchCheckChecked").addEventListener("change", function() {
+        let formData = new FormData();
+        if (this.checked) {
+            formData.append("flexSwitchCheckChecked", "on");
+        }
+
+        fetch("{{ url_for('index') }}", {
+            method: "POST",
+            body: formData
+        });
+    });
+    </script>
 
     {% block content %}{% endblock %}
 
@@ -45,7 +58,7 @@
 <script>
 let eanInput   = document.getElementById("ean");
 let scanForm   = document.getElementById("scanForm");
-let barcodeImg = document.getElementById("barcodeImg"); // just for demo
+let barcodeImg = document.getElementById("barcodeImg");
 
 // Always clear & focus on page load
 window.onload = () => {
@@ -59,7 +72,7 @@ eanInput.addEventListener("input", function() {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {
         if (this.value.length >= 6) {
-            scanForm.requestSubmit();   // ✅ submit the full form with checkbox state
+            scanForm.requestSubmit();   // ✅ goes to /scan
         }
     }, 400);
 });
@@ -71,7 +84,7 @@ barcodeImg.addEventListener("click", function() {
     let ean = filename.split(".")[0];
 
     eanInput.value = ean;
-    scanForm.requestSubmit();              // ✅ ensures checkbox goes too
+    scanForm.requestSubmit();           // ✅ goes to /scan
 });
 
 // After every form submit, reset & refocus input

@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="707e9028-a973-409e-b56b-f3b0efc26aa8" name="Changes" comment="changes to ean handeling etc">
+    <list default="true" id="707e9028-a973-409e-b56b-f3b0efc26aa8" name="Changes" comment="session added for checkbox">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
@@ -165,13 +165,22 @@
       <option name="project" value="LOCAL" />
       <updated>1758385966530</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="session added for checkbox">
+      <option name="closed" value="true" />
+      <created>1758386423242</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1758386423242</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="first draft" />
     <MESSAGE value="changes" />
     <MESSAGE value="changes to ean handeling etc" />
-    <option name="LAST_COMMIT_MESSAGE" value="changes to ean handeling etc" />
+    <MESSAGE value="session added for checkbox" />
+    <option name="LAST_COMMIT_MESSAGE" value="session added for checkbox" />
   </component>
 </project>

@@ -12,7 +12,7 @@ with app.app_context():
     #db.drop_all()  # nuke database
 
 api = SomeAPI(base_url=f"{domain}/api/search?parameters.SearchPhrase=")
-app.secret_key = "StellaSlangbella2025"
+app.secret_key = "StellaSlangbella..2025"
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -20,6 +20,7 @@ def index():
         session["flexSwitchCheckChecked"] = "flexSwitchCheckChecked" in request.form
 
     checkbox_state = session.get("flexSwitchCheckChecked", True)
+    # print(checkbox_state)
 
     return render_template("index.html", checkbox_state=checkbox_state, items=Item.query.all())
 
@@ -57,16 +58,17 @@ def add_item():
 @app.route('/scan', methods=['POST'])
 def scan_ean():
     ean = request.form['ean']
-    checkbox = request.form.get('flexSwitchCheckChecked')  # "1" if checked, None if not
+    checkbox = request.form.get('flexSwitchCheckChecked')
 
     item = Item.query.filter_by(ean=ean).first()
-    print(request.form)
+    # print(request.form)
 
     if checkbox:
+        # print('scan ean - checkbox is 1')
         if item:
             item.quantity += 1
             db.session.commit()
-            print('checkbox is 1 and item exists')
+            # print('checkbox is 1 and item exists')
         else:
             products = api.get_data(ean)
             if products and len(products) > 0:
