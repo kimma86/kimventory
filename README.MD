@@ -34,5 +34,3 @@ Flask
 Flask-SQLAlchemy
 
 Requests
-
-Install dependencies:

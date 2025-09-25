@@ -22,7 +22,11 @@
         {% for item in items %}
         <tr>
           <td>{{ item.name }}</td>
-          <td class="{% if item.quantity < 3 %}table-warning{% elif item.quantity == 0 %}table-danger{% else %}table-success{% endif %}">
+          <td class="{% if item.quantity == 0 %}table-danger
+                     {% elif item.quantity < 3 %}table-warning
+                     {% else %}table-success{% endif %}">
+            {{ item.quantity }}
+          </td>
               {{ item.quantity }}
           </td>
           <td>{{ item.artnr }}</td>
